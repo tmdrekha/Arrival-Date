@@ -1,0 +1,891 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="submit" form="form-arivaldate" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-bs-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-light"><i class="fa fa-reply"></i></a></div>
+
+      <h1>{{ heading_title }}</h1>
+
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+
+    </div>
+  </div>
+  {{ getkeyform }}
+  <div class="container-fluid">
+       {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+       {% endif %}
+    <div class="card">
+      <div class="card-header">
+        <i class="fa fa-pencil"></i> {{ text_edit }}
+      </div>
+      <div class="card-body">
+		
+			<form action="{{ save }}" method="post" data-oc-toggle="ajax" id="form-arivaldate" class="form-horizontal">
+          <ul class="nav nav-tabs gap-1">
+				<li class="nav-item"><a href="#tab-journal" data-bs-toggle="tab" class="nav-link active"><i class="fa fa-cog" aria-hidden="true"></i> {{ tab_journal }}</a></li>
+				<li class="nav-item"><a href="#tab-holiday" data-bs-toggle="tab" class="nav-link"><i class="fa fa-gift" aria-hidden="true"></i> {{ tab_holiday }}</a></li>
+				<li class="nav-item"><a href="#tab-time" data-bs-toggle="tab" class="nav-link"><i class="fas fa-clock" aria-hidden="true"></i> {{ tab_time }}</a></li>
+				<li class="nav-item"><a href="#tab-language" data-bs-toggle="tab" class="nav-link"><i class="fa fa-language" aria-hidden="true"></i> {{ tab_language }}</a></li>
+				<li class="nav-item"><a href="#tab-link" data-bs-toggle="tab" class="nav-link"><i class="fa fa-link" aria-hidden="true"></i> {{ tab_link }}</a></li>
+				<li class="nav-item"><a href="#tab-extratab" data-bs-toggle="tab" class="nav-link"><i class="fa fa-check-circle" aria-hidden="true"></i> {{ tab_extratab }}</a></li>
+			</ul>
+			<!-- General Tab -->
+			<div class="tab-content">
+				<div class="tab-pane active" id="tab-journal">
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label" for="input-tmdarivaldatetime_status">{{ entry_status }}</label>
+						<div class="col-sm-10">
+						  <select name="module_arivaldatetime_status" id="input-arivaldatetime_status" class="form-select">
+							{% if module_arivaldatetime_status %}
+							<option value="1" selected="selected">{{ text_enabled }}</option>
+							<option value="0">{{ text_disabled }}</option>
+							{% else %}
+							<option value="1">{{ text_enabled }}</option>
+							<option value="0" selected="selected">{{ text_disabled }}</option>
+							{% endif %}
+
+						  </select>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label" for="input-arivaldatetime_datestatus">{{ entry_dateformat }}</label>
+						<div class="col-sm-10">
+							<select name="arivaldatetime_datestatus" id="input-arivaldatetime_datestatus" class="form-select">
+								{% for dstatus in datestatus %}
+								{% if dstatus.value == arivaldatetime_datestatus %}
+								<option value="{{ dstatus.value }}" selected="selected">{{ dstatus.text }}</option>
+								{% else %}
+								<option value="{{ dstatus.value }}">{{ dstatus.text }}</option>
+								{% endif %}
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label" for="input-arivaldatetime_timestatus">{{ entry_timeformat }}</label>
+						<div class="col-sm-10">
+							<select name="arivaldatetime_timestatus" id="input-arivaldatetime_timestatus" class="form-select">
+								{% for tstatus in datestatus %}
+								{% if tstatus.value == arivaldatetime_timestatus %}
+								<option value="{{ tstatus.value }}" selected="selected">{{ tstatus.text }}</option>
+								{% else %}
+								<option value="{{ tstatus.value }}">{{ tstatus.text }}</option>
+								{% endif %}
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label">{{ entry_durationdate }}</label>
+						<div class="col-sm-10">
+						  <div class="table-responsive">
+							<table id="discount" class="table table-striped table-bordered table-hover">
+							  <thead>
+								<th class="text-left">{{ entry_datestart }}</th>
+								<th class="text-left">{{ entry_dateend }}</th>
+							  </thead>
+							  <tbody>
+								<tr>
+									<td class="text-left">
+										<div class="input-group">
+											<div class="input-group-text">{{ entry_datestart }}</div>
+											<input type="text" name="arivaldatetime_datestart" value="{{ arivaldatetime_datestart }}" placeholder="{{ entry_datestart }}" class="form-control"/>
+										</div>
+									</td>
+									<td class="text-left">
+										<div class="input-group">
+											<div class="input-group-text">{{ entry_dateend }}</div>
+											<input type="text" name="arivaldatetime_dateend" value="{{ arivaldatetime_dateend }}" placeholder="{{ entry_dateend }}" class="form-control"/>
+										</div>
+									</td>
+								</tr>
+							  </tbody>
+							</table>
+						  </div>
+						</div>
+					</div>
+				</div>
+				<!-- Holiday Tab -->
+				<div class="tab-pane" id="tab-holiday">
+					<div class="row mb-3">
+					  <label class="col-sm-2 col-form-label" for="input-tmdarivaldatetime_status">{{ entry_weeked }}</label>
+						<div class="col-sm-10">
+							<div class="form-control bg-body-secondary" style="height: 150px; overflow: auto;">
+							{% for week in weeks %}
+							<div class="checkbox">
+								<label>
+									{% if week.value in arivaldatetime_week %}
+									<input type="checkbox" name="arivaldatetime_week[]" value="{{ week.value }}" checked="checked" />
+									{{ week.text }}
+									{% else %}
+									<input type="checkbox" name="arivaldatetime_week[]" value="{{ week.value }}" />
+									{{ week.text }}
+									{% endif %}
+								</label>
+							</div>
+							{% endfor %}
+							</div>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label">{{ entry_store }}</label>
+						<div class="col-sm-10">
+						  <div class="form-control bg-body-secondary" style="height: 150px; overflow: auto;">
+							{% for store in stores %}
+							<div class="checkbox">
+								<label>
+									{% if store.store_id in arivaldatetime_store %}
+									<input type="checkbox" name="arivaldatetime_store[]" value="{{ store.store_id }}" checked="checked" />
+									{{ store.name }}
+									{% else %}
+									<input type="checkbox" name="arivaldatetime_store[]" value="{{ store.store_id }}" />
+									{{ store.name }}
+									{% endif %}
+								</label>
+							</div>
+							{% endfor %}
+						  </div>
+						</div>
+					  </div>
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label" for="input-datedeactive">{{ entry_datedeactive }}</label>
+						<div class="col-sm-10">
+							<table id="de-date" class="table table-striped table-bordered table-hover">
+								<thead>
+								  <tr>
+									<td class="text-left">{{ entry_datedeactive }}</td>
+									<td></td>
+								  </tr>
+								</thead>
+								<tbody>
+								  {% set de_date = 0 %}
+								  {% for dea_date in deactive_dates %}
+								  <tr id="dedate-row{{ de_date }}">
+									<td class="text-left">
+										<div class="input-group">
+										<input type="text" name="arivaldatetime_datedeactive[{{ de_date }}][de_date]" value="{{ dea_date.de_date }}"  placeholder="YYYY-MM-DD" class="form-control date" />
+										<div class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></div>
+										</div>
+									</td>
+									<td class="text-left"><button type="button" onclick="$('#dedate-row{{ de_date }}').remove();" data-bs-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
+								  </tr>
+								  {% set de_date = de_date + 1 %}
+								  {% endfor %}
+								</tbody>
+								<tfoot>
+								  <tr>
+									<td colspan="1"></td>
+									<td class="text-left"><button type="button" onclick="addDate();" data-bs-toggle="tooltip" title="{{ button_add }}" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button></td>
+								  </tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- Time Tab -->
+				<div class="tab-pane" id="tab-time">
+					<div class="row mb-3">
+					  <label class="col-sm-2 col-form-label" for="input-arivaldatetime_cutoftime">{{ entry_cutoftime }}</label>
+						<div class="col-sm-10">
+							<input type="text" name="arivaldatetime_cutoftime" value="{{ arivaldatetime_cutoftime }}" placeholder="{{ entry_cutoftime }}"id="input-arivaldatetime_cutoftime" class="form-control"/>
+						</div>
+					</div>
+					<div class="row mb-3">
+					  <label class="col-sm-2 col-form-label" for="input-arivaldatetime_timezone">{{ entry_timezone }}</label>
+					  <div class="col-sm-10">
+						<select name="arivaldatetime_timezone" id="input-arivaldatetime_timezone" class="form-select">
+							{% for times in timezones %}
+							{% if times.name  ==  arivaldatetime_timezone %}
+							<option value="{{ times.name }}" selected="selected">{{ times.name }}</option>
+							{% else %}
+							<option value="{{ times.name }}">{{ times.name }}</option>
+							{% endif %}
+							{% endfor %}
+						</select>
+					  </div>
+					</div>
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label">{{ entry_typetime }}</label>
+						<div class="col-sm-10">
+						  <label class="radio-inline">
+							{% if arivaldatetime_typetime == 'customer' %}
+							<input type="radio" name="arivaldatetime_typetime" value="customer" checked="checked" />
+							{{ text_coose_customer }}
+							{% else %}
+							<input type="radio" name="arivaldatetime_typetime" value="customer" />
+							{{ text_coose_customer }}
+							{% endif %}
+						  </label>
+						  <label class="radio-inline">
+							{% if arivaldatetime_typetime == 'custom' %}
+							<input type="radio" name="arivaldatetime_typetime" value="custom" checked="checked" />
+							{{ text_custom_time }}
+							{% else %}
+							<input type="radio" name="arivaldatetime_typetime" value="custom" />
+							{{ text_custom_time }}
+							{% endif %}
+						  </label>
+						</div>
+					</div>
+					<div id="typetime-custom" class="typetime">
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label" for="input-de-time">{{ entry_time }}</label>
+						<div class="col-sm-10">
+							<table id="de-time" class="table table-striped table-bordered table-hover">
+								<thead>
+								  <tr>
+									<td class="text-left">{{ entry_day }}</td>
+									<td class="text-left">{{ entry_op_time }}</td>
+									<td class="text-left">{{ entry_clo_time }}</td>
+									<td class="text-left">{{ entry_text }}</td>
+									<td class="text-left">{{ entry_ex_charges }}</td>
+									<td>{{ entry_action }}</td>
+								  </tr>
+								</thead>
+								<tbody>
+								  {% set de_time = 0 %}
+								  {% for de_times in deli_times %}
+								  <tr id="detime-row{{ de_time }}">
+									<td class="text-left">
+										<select name="arivaldatetime_delivery_time[{{ de_time }}][days]" class="form-select">
+										{% for week in days %}
+											{% if week.value == de_times.days %}
+											<option value="{{ week.value }}" selected="selected">{{ week.text }}</option>
+											{% else %}
+											<option value="{{ week.value }}">{{ week.text }}</option>
+											{% endif %}
+										{% endfor %}
+										</select>
+									</td>
+									<td class="text-left">
+									<div class="input-group tmdtime">
+									<input type="text" name="arivaldatetime_delivery_time[{{ de_time }}][open_time]" value="{{ de_times.open_time }}" placeholder="{{ entry_op_time }}" data-date-format="HH:mm" class="form-control time" />
+									<span class="input-group-btn">
+									  <button type="button" class="btn btn-light"><i class="fas fa-clock"></i></button>
+									</span>		
+									</div>
+									</td>
+									<td class="text-left">
+									<div class="input-group tmdtime">
+										<input type="text" name="arivaldatetime_delivery_time[{{ de_time }}][close_time]" value="{{ de_times.close_time }}" placeholder="{{ entry_clo_time }}" data-date-format="HH:mm" class="form-control time" />
+									<span class="input-group-btn">
+									 <button type="button" class="btn btn-light"><i class="fas fa-clock"></i></button>
+									</span>		
+									</div>
+									</td>
+									<td class="text-left"><input type="text" name="arivaldatetime_delivery_time[{{ de_time }}][text]" value="{{ de_times.text }}" placeholder="{{ entry_text }}" class="form-control" /></td>
+									<td class="text-left"><input type="text" name="arivaldatetime_delivery_time[{{ de_time }}][ex_charges]" value="{{ de_times.ex_charges }}" placeholder="{{ entry_ex_charges }}" class="form-control" /></td>
+									<td class="text-left"><button type="button" onclick="$('#detime-row{{ de_time }}').remove();" data-bs-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
+								  </tr>
+								  {% set de_time = de_time + 1 %}
+								  {% endfor %}
+								</tbody>
+								<tfoot>
+								  <tr>
+									<td colspan="5"></td>
+									<td class="text-left"><button type="button" onclick="addTime();" data-bs-toggle="tooltip" title="{{ button_add }}" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button></td>
+								  </tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+					</div>
+					<div id="typetime-customer" class="typetime"></div>
+				</div>
+				<!-- Language Tab -->
+				<div class="tab-pane" id="tab-language">
+	           <ul class="nav nav-tabs" id="language-arrival">
+							{% for language in languages %}
+							<li class="nav-item"><a href="#language2-{{ language.language_id }}" data-bs-toggle="tab" class="nav-link{% if loop.first %} active{% endif %}"><img src="{{ language.image }}" title="{{ language.name }}"/> {{ language.name }}</a></li>
+							{% endfor %}
+						</ul>
+					<div class="tab-content">
+						{% for language in languages %}
+						<div id="language2-{{ language.language_id }}" class="tab-pane{% if loop.first %} active{% endif %}">
+
+								<div class="row mb-3">
+								<label class="col-sm-2 col-form-label" for="input-datetimeheading{{ language.language_id }}">{{ entry_datetime_heading }}</label>
+								<div class="col-sm-10">
+								  <input type="text" name="arivaldatetime_multi[{{ language.language_id }}][datetimeheading]" value="{{ arivaldatetime_multi[language.language_id] ? arivaldatetime_multi[language.language_id].datetimeheading }}" placeholder="{{ entry_datetime_heading }}" id="input-datetimeheading{{ language.language_id }}" class="form-control" />
+								</div>
+							</div>
+							
+							<div class="row mb-3">
+								<label class="col-sm-2 col-form-label" for="input-datetext{{ language.language_id }}">{{ entry_Arivaldatetext }}</label>
+								<div class="col-sm-10">
+								  <input type="text" name="arivaldatetime_multi[{{ language.language_id }}][datetext]" value="{{ arivaldatetime_multi[language.language_id] ? arivaldatetime_multi[language.language_id].datetext }}" placeholder="{{ entry_Arivaldatetext }}" id="input-datetext{{ language.language_id }}" class="form-control" />
+								</div>
+							</div>
+							<div class="row mb-3">
+								<label class="col-sm-2 col-form-label" for="input-timetext{{ language.language_id }}">{{ entry_Arivaltimetext }}</label>
+								<div class="col-sm-10">
+								  <input type="text" name="arivaldatetime_multi[{{ language.language_id }}][timetext]" value="{{ arivaldatetime_multi[language.language_id] ? arivaldatetime_multi[language.language_id].timetext }}" placeholder="{{ entry_Arivaltimetext }}" id="input-timetext{{ language.language_id }}" class="form-control" />
+								</div>
+							</div>
+							<div class="row mb-3">
+								<label class="col-sm-2 col-form-label" for="input-dateerror{{ language.language_id }}">{{ entry_dateerror }}</label>
+								<div class="col-sm-10">
+								  <input type="text" name="arivaldatetime_multi[{{ language.language_id }}][dateerror]" value="{{ arivaldatetime_multi[language.language_id] ? arivaldatetime_multi[language.language_id].dateerror }}" placeholder="{{ entry_dateerror }}" id="input-dateerror{{ language.language_id }}" class="form-control" />
+								</div>
+							</div>
+							<div class="row mb-3">
+								<label class="col-sm-2 col-form-label" for="input-timeerror{{ language.language_id }}">{{ entry_timeerror }}</label>
+								<div class="col-sm-10">
+								  <input type="text" name="arivaldatetime_multi[{{ language.language_id }}][timeerror]" value="{{ arivaldatetime_multi[language.language_id] ? arivaldatetime_multi[language.language_id].timeerror }}" placeholder="{{ entry_timeerror }}" id="input-timeerror{{ language.language_id }}" class="form-control" />
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+       <!-- Link Tab -->
+				<div class="tab-pane" id="tab-link">
+					        <!-- Category -->
+					        <div class="row mb-3">
+		                <label class="col-sm-2 col-form-label" for="input-parent">{{ entry_category }}</label>
+		                <div class="col-sm-10">
+                      {% if VERSION>='4.0.2.0' %}
+		                  <input type="text" name="category" value="" placeholder="{{ entry_category }}" id="input-category" data-oc-target="autocomplete-category" class="form-control" autocomplete="off"/>
+                      <ul id="autocomplete-category" class="dropdown-menu"></ul>
+                      {% else %}
+                       <input type="text" name="category" value="" placeholder="{{ entry_category }}" id="input-category" list="list-category" class="form-control"/>
+                       <datalist id="list-category"></datalist>
+                      {% endif %}
+                    <div class="form-control p-0" style="height: 150px; overflow: auto;">
+                    <table id="product-category" class="table table-sm m-0">
+                      <tbody>
+                        {% if tmdcategories %}
+		                    {% for category in tmdcategories %}
+                          <tr id="product-category-{{ category.category_id }}">
+                            <td>{{ category.name }}<input type="hidden" name="arivaldatetime_category[]" value="{{ category.category_id }}"/></td>
+                            <td class="text-end"><button type="button" class="btn btn-danger btn-sm"><i class="fa-solid fa-minus-circle"></i></button></td>
+                          </tr>
+                        {% endfor %}
+                        {% endif %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="form-text">{{ help_autocomplete }}</div>
+		             </div>
+		            </div>
+
+		            <!-- Product -->
+		            <div class="row mb-3">
+		                <label class="col-sm-2 col-form-label" for="input-parent">{{ entry_product }}</label>
+		                <div class="col-sm-10">
+                       {% if VERSION>='4.0.2.0' %}
+		                  <input type="text" name="product" value="" placeholder="{{ entry_product }}" id="input-product" data-oc-target="autocomplete-product" class="form-control" autocomplete="off"/>
+                      <ul id="autocomplete-product" class="dropdown-menu"></ul>
+                      {% else %}
+                       <input type="text" name="product" value="" placeholder="{{ entry_product }}" id="input-product" list="list-product" class="form-control"/>
+                       <datalist id="list-product"></datalist>
+                      {% endif %}
+
+		                   <div class="form-control p-0" style="height: 150px; overflow: auto;">
+                       <table id="product-product" class="table table-sm m-0">
+                        <tbody>
+                        {% if tmd_products %}
+		                    {% for product in tmd_products %}
+                          <tr id="product-product-{{ product.product_id }}">
+                            <td>{{ product.name }}<input type="hidden" name="arivaldatetime_product[]" value="{{ product.product_id }}"/></td>
+                            <td class="text-end"><button type="button" class="btn btn-danger btn-sm"><i class="fa-solid fa-minus-circle"></i></button></td>
+                          </tr>
+                        {% endfor %}
+                        {% endif %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="form-text">{{ help_autocomplete }}</div>
+		             </div>
+		            </div>
+
+		            <!-- Manufacturer -->
+		            <div class="row mb-3">
+		                <label class="col-sm-2 col-form-label" for="input-parent">{{ entry_manufacture }}</label>
+		                <div class="col-sm-10">
+                       {% if VERSION>='4.0.2.0' %}
+		                  <input type="text" name="manufacturer" value="" placeholder="{{ entry_product }}" id="input-manufacturer" data-oc-target="autocomplete-manufacturer" class="form-control" autocomplete="off"/>
+                      <ul id="autocomplete-manufacturer" class="dropdown-menu"></ul>
+                      {% else %}
+                       <input type="text" name="manufacturer" value="" placeholder="{{ entry_product }}" id="input-manufacturer" list="list-manufacturer" class="form-control"/>
+                       <datalist id="list-manufacturer"></datalist>
+                      {% endif %}
+                      <div class="form-control p-0" style="height: 150px; overflow: auto;">
+                       <table id="product-manufacturer" class="table table-sm m-0">
+                        <tbody>
+                         {% if tmd_manufacturers %}
+		                    {% for manufacturer in tmd_manufacturers %}
+                          <tr id="product-manufacturer-{{ manufacturer.manufacturer_id }}">
+                            <td>{{ manufacturer.name }}<input type="hidden" name="arivaldatetime_manufacturer[]" value="{{ manufacturer.manufacturer_id }}"/></td>
+                            <td class="text-end"><button type="button" class="btn btn-danger btn-sm"><i class="fa-solid fa-minus-circle"></i></button></td>
+                          </tr>
+                        {% endfor %}
+                        {% endif %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="form-text">{{ help_autocomplete }}</div>
+		              </div>
+		            </div>
+				     </div>
+        <!-- Term and Condition Tab -->
+				<div class="tab-pane" id="tab-extratab">
+					<div class="row mb-3">
+						<label class="col-sm-2 col-form-label" for="input-ex_status">{{ entry_ex_status }}</label>
+						<div class="col-sm-10">
+							<label class="tmdswitch">
+							  <input type="checkbox" value="1" name="arivaldatetimeg_ex_status" {% if arivaldatetimeg_ex_status %} checked="checked" {% endif %}>
+							  <span class="tmdslider round"></span>
+							  <span class="tmdabsolute-no">{{ text_no }}</span>
+							</label>
+						</div>
+					</div>
+					<div class="row mb-3">
+			            <label class="col-sm-2 col-form-label">{{ entry_heading }}</label>
+			            <div class="col-sm-10">
+			              {% for language in languages %}
+			              <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+			                <input type="text" name="arivaldatetime_setting[{{ language.language_id }}][text_heading]" value="{{ arivaldatetime_setting[language.language_id] ? arivaldatetime_setting[language.language_id].text_heading }}" placeholder="{{ entry_heading }}" class="form-control" />
+			              </div>
+			              {% endfor %}
+			            </div>
+		            </div>
+		            <div class="row mb-3">
+						<label class="col-sm-2 col-form-label" for="input-ex_status">{{ entry_ex_setting }}</label>
+						<div class="col-sm-10">
+				            <table id="express-value" class="table table-striped table-bordered table-hover">
+				              <thead>
+				                <tr>
+				                  <td class="text-left">{{ entry_ex_text }}</td>
+				                  <td class="text-right">{{ entry_ex_price }}</td>
+				                  <td class="text-center">{{ entry_action }}</td>
+				                </tr>
+				              </thead>
+				              <tbody>
+				              {% set express_row = 0 %}
+				              {% for express_value in express_values %}
+				              <tr id="express-row{{ express_row }}">
+				                <td class="text-left">
+				                  {% for language in languages %}
+				                  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+				                    <input type="text" name="arivaldatetime_express_value[{{ express_row }}][{{ language.language_id }}][express_text]" value="{{ express_value[language.language_id] ? express_value[language.language_id].express_text }}" placeholder="{{ entry_ex_text }}" class="form-control" />
+				                  </div>
+				                  {% endfor %}</td>
+				                <td class="text-left"><input type="text" name="arivaldatetime_express_value[{{ express_row }}][express_price]" value="{{ express_value.express_price }}" placeholder="{{ entry_ex_price }}" class="form-control" /></td>
+				                <td class="text-center"><button type="button" onclick="$('#express-row{{ express_row }}').remove();" data-bs-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
+				              </tr>
+				              {% set express_row = express_row + 1 %}
+				              {% endfor %}
+				                </tbody>
+				                <tfoot>
+				                <tr>
+				                  <td colspan="2"></td>
+				                  <td class="text-center"><button type="button" onclick="addExpressValue();" data-bs-toggle="tooltip" title="{{ button_add }}" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button></td>
+				                </tr>
+				              </tfoot>
+				            </table>
+				        </div>
+				    </div>
+				    <div class="row mb-3">
+						<label class="col-sm-2 col-form-label" for="input-text_setting">{{ entry_text_setting }}</label>
+						<div class="col-sm-10">
+				            <table id="textsetting" class="table table-striped table-bordered table-hover">
+				              <thead>
+				                <tr>
+				                  <td class="text-left">{{ entry_tc_text }}</td>
+				                  <td class="text-left">{{ entry_tc_sort_order }}</td>
+				                  <td class="text-center">{{ entry_action }}</td>
+				                </tr>
+				              </thead>
+				              <tbody>
+				              {% set text_row = 0 %}
+				              {% for text_setting in text_settings %}
+				              <tr id="text-setting-row{{ text_row }}">
+				                <td class="text-left">
+				                  {% for language in languages %}
+				                  <div class="input-group"><span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span>
+				                    <input type="text" name="arivaldatetime_text_setting[{{ text_row }}][{{ language.language_id }}][tc_text]" value="{{ text_setting[language.language_id] ? text_setting[language.language_id].tc_text }}" placeholder="{{ entry_tc_text }}" class="form-control" />
+				                  </div>
+				                  {% endfor %}
+				                 </td>
+				                 <td class="text-left"><input type="text" name="arivaldatetime_text_setting[{{ text_row }}][tc_sort_order]" value="{{ text_setting.tc_sort_order }}" placeholder="{{ entry_tc_sort_order }}" class="form-control" /></td>
+				                <td class="text-center"><button type="button" onclick="$('#text-setting-row{{ text_row }}').remove();" data-bs-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
+				              </tr>
+				              {% set text_row = text_row + 1 %}
+				              {% endfor %}
+				              </tbody>
+				              <tfoot>
+				                <tr>
+				                  <td colspan="2"></td>
+				                  <td class="text-center"><button type="button" onclick="addTextsetting();" data-bs-toggle="tooltip" title="{{ button_add }}" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button></td>
+				                </tr>
+				              </tfoot>
+				            </table>
+				        </div>
+				    </div>
+				</div>
+			  </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript"><!--
+$('input[name=\'arivaldatetime_typetime\']').on('change', function() {
+	$('.typetime').hide();
+	$('#typetime-' + this.value).show();
+});
+
+$('input[name=\'arivaldatetime_typetime\']:checked').trigger('change');
+$('#language-arrival a:first').tab('show');
+//--></script>
+
+<script>
+var de_date = '{{ de_date }}';
+
+function addDate() {
+	html  = '<tr id="dedate-row' + de_date + '">';
+  html += '  <td class="text-left"><div class="input-group">';
+  html += '    <input type="text" name="arivaldatetime_datedeactive['+de_date+'][de_date]"  placeholder="YYYY-MM-DD" class="form-control date">';
+	html += '  <div class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></div>';
+	html += '  </div>';
+	html += '  </td>';
+  html += '  <td class="text-left"><button type="button" onclick="$(\'#dedate-row' + de_date + '\').remove();" data-bs-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
+	html += '</tr>';
+	$('#de-date tbody').append(html);
+	$('.date').datetimepicker({
+		pickTime: false
+	});
+	de_date++;
+}
+</script>
+
+<script>
+var de_time = '{{ de_time }}';
+function addTime() {
+html  = '<tr id="detime-row' + de_time + '">';
+html += '  <td class="text-left">';
+html += '<select name="arivaldatetime_delivery_time['+de_time+'][days]" class="form-select">';
+    {% for day in days %}
+html += '<option value="{{ day.value }}">{{ day.text }}</option>';
+	{% endfor %}
+html += '	</select>';
+html += '  </td>';
+html += '  <td class="text-left">';
+html += '  <div class="input-group tmdtime">';
+html += '    <input type="text" name="arivaldatetime_delivery_time['+de_time+'][open_time]" placeholder="{{ entry_op_time }}" data-date-format="HH:mm" class="form-control time">';
+html += '  <span class="input-group-btn">';
+html += '  <button type="button" class="btn btn-light"><i class="fas fa-clock"></i></button';
+html += '  </span>';
+html += '  </dive>';
+html += '  </td>';
+html += '  <td class="text-left">';
+html += '  <div class="input-group tmdtime">';
+html += '    <input type="text" name="arivaldatetime_delivery_time['+de_time+'][close_time]" placeholder="{{ entry_clo_time }}" data-date-format="HH:mm" class="form-control time">';
+html += '  <span class="input-group-btn">';
+html += '  <button type="button" class="btn btn-light"><i class="fas fa-clock"></i></button';
+html += '  </dive>';
+html += '  </span>';
+html += '  </td>';
+html += '  <td class="text-left">';
+html += '    <input type="text" name="arivaldatetime_delivery_time['+de_time+'][text]" placeholder="{{ entry_text }}" class="form-control">';
+html += '  </td>';
+html += '  <td class="text-left">';
+html += '    <input type="text" name="arivaldatetime_delivery_time['+de_time+'][ex_charges]" placeholder="{{ entry_ex_charges }}" class="form-control">';
+html += '  </td>';
+html += '  <td class="text-left"><button type="button" onclick="$(\'#detime-row' + de_time + '\').remove();" data-bs-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
+html += '</tr>';
+
+
+$('#de-time tbody').append(html);
+$('.tmdtime').datetimepicker({
+language: '{{ datepicker }}',
+    pickDate: false,
+    pickTime: true,
+});
+    de_time++;
+}
+</script>
+
+<script>
+//$('#language-arrival a:first').tab('show');
+$('.date').datetimepicker({
+	pickTime: false
+});
+
+$('.tmdtime').datetimepicker({
+language: '{{ datepicker }}',
+  pickDate: false,
+  pickTime: true,
+});
+</script>
+
+<script type="text/javascript"><!--
+ //Product    
+ $('input[name=\'product\']').autocomplete({
+  'source': function(request, response) {
+    $.ajax({
+      url: 'index.php?route=catalog/product|autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['product_id']
+          }
+        }));
+      }
+    });
+  },
+
+  'select': function (item) {
+        $('#input-product').val('');
+
+        $('#product-product-' + item['value']).remove();
+
+        html = '<tr id="product-product-' + item['value'] + '">';
+        html += '  <td>' + item['label'] + '<input type="hidden" name="arivaldatetime_product[]" value="' + item['value'] + '"/></td>';
+        html += '  <td class="text-end"><button type="button" class="btn btn-danger btn-sm"><i class="fa-solid fa-minus-circle"></i></button></td>';
+        html += '</tr>';
+
+        $('#product-product tbody').append(html);
+    }
+});
+
+$('#product-product').on('click', '.btn', function () {
+    $(this).parent().parent().remove();
+});
+ 
+   
+//Category
+$('input[name=\'category\']').autocomplete({
+'source': function(request, response) {
+$.ajax({
+  url: 'index.php?route=catalog/category|autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+  dataType: 'json',
+  success: function(json) {
+    response($.map(json, function(item) {
+      return {
+        label: item['name'],
+        value: item['category_id']
+      }
+    }));
+  }
+});
+},
+
+'select': function (item) {
+  $('#input-category').val('');
+
+  $('#product-category-' + item['value']).remove();
+
+  html = '<tr id="product-category-' + item['value'] + '">';
+  html += '  <td>' + item['label'] + '<input type="hidden" name="arivaldatetime_category[]" value="' + item['value'] + '"/></td>';
+  html += '  <td class="text-end"><button type="button" class="btn btn-danger btn-sm"><i class="fa-solid fa-minus-circle"></i></button></td>';
+  html += '</tr>';
+
+  $('#product-category tbody').append(html);
+
+ }
+});
+$('#product-category').on('click', '.btn', function () {
+    $(this).parent().parent().remove();
+});
+
+
+//Manufacturer
+$('input[name=\'manufacturer\']').autocomplete({
+'source': function(request, response) {
+$.ajax({
+  url: 'index.php?route=catalog/manufacturer|autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+  dataType: 'json',
+  success: function(json) {
+    response($.map(json, function(item) {
+      return {
+        label: item['name'],
+        value: item['manufacturer_id']
+      }
+    }));
+  }
+});
+},
+
+ 'select': function (item) {
+        $('#input-manufacturer').val('');
+
+        $('#product-manufacturer-' + item['value']).remove();
+
+        html = '<tr id="product-manufacturer-' + item['value'] + '">';
+        html += '  <td>' + item['label'] + '<input type="hidden" name="arivaldatetime_manufacturer[]" value="' + item['value'] + '"/></td>';
+        html += '  <td class="text-end"><button type="button" class="btn btn-danger btn-sm"><i class="fa-solid fa-minus-circle"></i></button></td>';
+        html += '</tr>';
+
+        $('#product-manufacturer tbody').append(html);
+    }
+});
+
+$('#product-manufacturer').on('click', '.btn', function () {
+    $(this).parent().parent().remove();
+});
+
+var express_row = '{{ express_row }}';
+function addExpressValue() {
+	html  = '  <tr id="express-row' + express_row + '">';
+	html += '  <td class="text-left">'
+	        {% for language in languages %}
+	html += '  <div class="input-group">';
+	html += '  <span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span><input type="text" name="arivaldatetime_express_value[' + express_row + '][{{ language.language_id }}][express_text]" value="" placeholder="{{ entry_ex_text }}" class="form-control" />';
+    html += '    </div>';
+	       {% endfor %}
+	html += '  </td>';
+	html += '  <td class="text-left"><input type="text" name="arivaldatetime_express_value[' + express_row + '][express_price]" value="" placeholder="{{ entry_ex_price }}" class="form-control" /></td>';
+	html += '  <td class="text-center"><button type="button" onclick="$(\'#express-row' + express_row + '\').remove();" data-bs-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
+	html += '</tr>';
+
+	$('#express-value tbody').append(html);
+
+	express_row++;
+}
+
+var text_row = '{{ text_row }}';
+function addTextsetting() {
+	html  = '  <tr id="text-setting-row' + text_row + '">';
+	html += '  <td class="text-left">'
+	{% for language in languages %}
+	html += '  <div class="input-group">';
+	html += '  <span class="input-group-text"><img src="{{ language.image }}" title="{{ language.name }}" /></span><input type="text" name="arivaldatetime_text_setting[' + text_row + '][{{ language.language_id }}][tc_text]" value="" placeholder="{{ entry_tc_text }}" class="form-control" />';
+    html += '  </div>';
+	{% endfor %}
+	html += '  </td>';
+	html += '  <td class="text-left"><input type="text" name="arivaldatetime_text_setting[' + text_row + '][tc_sort_order]" value="" placeholder="{{ entry_tc_sort_order }}" class="form-control" /></td>';
+	html += '  <td class="text-center"><button type="button" onclick="$(\'#text-setting-row' + text_row + '\').remove();" data-bs-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
+	html += '</tr>';
+
+	$('#textsetting tbody').append(html);
+
+	text_row++;
+}
+</script>
+
+<style>
+.tmdswitch {
+  position: relative;
+  display: inline-block;
+  width: 95px;
+  height: 30px;
+}
+
+.tmdswitch input {display:none;}
+.tmdslider {
+  position: absolute;
+  cursor: pointer;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #f2f2f2;
+  -webkit-transition: .4s;
+  transition: .4s;
+ }
+
+.tmdslider:before {
+  position: absolute;
+  z-index: 2;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  background-color: #2aabd2;
+      -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+  -webkit-transition: .4s;
+  transition: all 0.4s ease-in-out;
+ }
+
+.tmdslider:after {
+  position: absolute;
+  left: 0;
+  z-index: 1;
+  content: "YES";
+    font-size: 14px;
+    text-align: left !important;
+    line-height: 30px;
+	  padding-left: 0;
+    width: 95px;
+    color: #fff;
+    height: 30px;
+    border-radius: 100px;
+    background-color: #2aabd2;
+    -webkit-transform: translateX(-160px);
+    -ms-transform: translateX(-160px);
+    transform: translateX(-160px);
+    transition: all 0.4s ease-in-out;
+   }
+
+input:checked + .tmdslider:after {
+  -webkit-transform: translateX(0px);
+  -ms-transform: translateX(0px);
+  transform: translateX(0px);
+  /*width: 235px;*/
+  padding-left: 15px;
+ }
+
+input:checked + .tmdslider:before {
+  background-color: #fff;
+ }
+
+input:checked + .tmdslider:before {
+  -webkit-transform: translateX(63px);
+  -ms-transform: translateX(63px);
+  transform: translateX(63px);
+ }
+
+/* Rounded arsliders */
+.tmdslider.round {
+  border-radius: 100px;
+ }
+
+.tmdslider.round:before {
+  border-radius: 50%;
+ }
+.tmdabsolute-no {
+position: absolute;
+left: 0;
+color: #2aabd2;
+text-align: right !important;
+font-size: 14px;
+width: calc(100% - 15px);
+height: 30px;
+line-height: 30px;
+cursor: pointer;
+ } 
+
+#form-arivaldate ul li > a.active,#form-arivaldate ul li > a.active:hover,#form-arivaldate ul li > a.active:focus{
+  background: #00a4e4 none repeat scroll 0 0 !important;
+  color:#fff;
+}
+#form-arivaldate .nav-tabs li a{
+  background:#E4E6EA;
+}
+#form-arivaldate .nav-tabs > li > a.active,#form-arivaldate .nav-tabs > li > a.active:hover,#form-arivaldate .nav-tabs > li > a.active:focus{
+  color:#fff;
+}
+#tab-email ul li > a.active,#tab-email ul li > a.active:hover,#tab-email ul li > a.active:focus, #tab-sucess ul li > a.active,#tab-sucess ul li > a.active:hover,#tab-sucess ul li > a.active:focus{
+  background: #fff !important;
+  color: #333 !important;
+}
+</style>
+
+{{ footer }}

@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>TMD Arival Date Time</name>
+	<version>1.0.0</version>
+	<code>#TFB-1.0</code>
+	<author>TMD(opencartextensions.in)</author>
+	<link>http://opencartextensions.in/</link>
+
+	<file path="admin/controller/common/column_left.php">
+		<operation error="skip">
+			<search><![CDATA[// Extension]]></search>
+			<add position="before"><![CDATA[
+		/*Delivery Date*/
+		$this->load->language('extension/module/tmdarivaldatetime_language');
+		$module_tmdarivaldatetime_status = $this->config->get('module_tmdarivaldatetime_status');
+		if($module_tmdarivaldatetime_status){
+			$data['menus'][] = array(
+				'id'       => 'menu-timeslote',
+				'icon'	   => 'fa-clock-o',
+				'name'	   => $this->language->get('text_datetime'),
+				'href'     => $this->url->link('extension/module/tmdarivaldatetime', 'user_token=' . $this->session->data['user_token'], true),
+				'children' => array()
+			);
+			}
+		 /*Delivery Date*/
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/controller/product/product.php">
+		<operation error="skip">
+			<search><![CDATA[if ($product_info) {]]></search>
+			<add position="before"><![CDATA[
+		/*Delivery Date*/
+		$datestatus 	          = $this->config->get('module_tmdarivaldatetime_datestatus');
+		$timerqstatus 	        = $this->config->get('module_tmdarivaldatetime_timestatus');
+		$data['tmddel_status'] 	= $this->config->get('module_tmdarivaldatetime_status');
+		if ($data['tmddel_status'] == 1) {
+			$data['arivaldatetime'] = $this->load->controller('extension/arivaldatetime');
+			$this->load->model('extension/arivaldatetime');
+			$data['link_status'] = $this->model_extension_arivaldatetime->getProductlinkStatus($product_id);
+		}
+
+		/*Delivery Date*/
+
+		/*Delivery Date*/
+		if(isset($this->request->post['deliverydate'])) {
+			$this->session->data['deliverydate'] = $this->request->post['deliverydate'];
+		} else {
+			$this->session->data['deliverydate'] ='';
+		}
+
+		if(isset($this->request->post['deliverytime'])) {
+			$this->session->data['deliverytime'] = $this->request->post['deliverytime'];
+		} else {
+			$this->session->data['deliverytime'] ='';
+		}
+		 /*Delivery Date*/
+			]]></add>
+		</operation>
+	</file>
+
+
+	<file path="catalog/controller/checkout/cart.php">
+	<operation error="skip">
+		<search><![CDATA[if (isset($this->request->post['recurring_id'])) {]]></search>
+		<add position="before"><![CDATA[
+		/* Delivery Date Error*/
+		$this->load->language('extension/arivaldatetime_language');
+		$datestatus 	          = $this->config->get('module_tmdarivaldatetime_datestatus');
+		$timerqstatus 	        = $this->config->get('module_tmdarivaldatetime_timestatus');
+		$data['tmddel_status'] 	= $this->config->get('module_tmdarivaldatetime_status');
+
+		if ($data['tmddel_status'] == 1) {
+			$tmddelilables=$this->config->get('module_tmdarivaldatetime_multi');
+			if(!empty($tmddelilables[$this->config->get('config_language_id')]['dateerror'])){
+				$data['entry_deliverydate'] = $tmddelilables[$this->config->get('config_language_id')]['dateerror'];
+			} else {
+				$data['entry_deliverydate'] = $this->language->get('error_deliverydate');
+			}
+
+			if(!empty($tmddelilables[$this->config->get('config_language_id')]['timeerror'])){
+				$data['entry_deliverytime'] = $tmddelilables[$this->config->get('config_language_id')]['timeerror'];
+			} else {
+				$data['entry_deliverytime'] = $this->language->get('error_deliverytime');
+			}
+
+			if ($datestatus==2) {
+				if(empty($this->request->post['option']['deliverydate'])) {
+					$json['error']['option']['deliverydate'] = $data['entry_deliverydate'];
+				}
+			}
+
+			if ($timerqstatus==2) {
+				if(empty($this->request->post['option']['deliverytime']) && !empty($this->request->post['option']['deliverydate'])) {
+					$json['error']['option']['deliverytime'] = $data['entry_deliverytime'];
+				}
+			}
+		}
+		/* Delivery Date Error*/
+		]]></add>
+	</operation>				
+</file>
+
+	<file path="catalog/view/theme/journal3/template/product/product.twig">
+		<operation error="skip">
+			<search ><![CDATA[{% if options %}]]></search>
+			<add position="before"><![CDATA[
+			<div class="product-options">
+			    {% if link_status and tmddel_status %}
+	           {{ arivaldatetime }}
+	        {% endif %}
+	        </div>
+			]]></add>
+		</operation>
+		<operation error="skip">
+		<search><![CDATA[if (json['error']['recurring']) {]]></search>
+		<add position="before"><![CDATA[
+		/* Delivery Date Error*/
+        if(json['error']['option']['deliverydate']) {
+         $('.errormsgdate').after('<div class="text-danger">' +  json['error']['option']['deliverydate'] + '</div>');
+        }
+
+        if(json['error']['option']['deliverytime']) {
+          $('.errormsgtime').after('<div class="text-danger">' +  json['error']['option']['deliverytime'] + '</div>');
+        }
+        /* Delivery Date Error*/
+		]]></add>
+	    </operation>
+	    <operation error="skip">
+			<search ><![CDATA['#product select[name="recurring_id"]']]></search>
+			<add position="replace"><![CDATA['#product select[name="recurring_id"], input[name=\'option[express_delivery]\']:checked, input[name=\'option[express_charges]\']'
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/view/theme/journal2/template/product/product.twig">
+		<operation error="skip">
+			<search ><![CDATA[{% if options %}]]></search>
+			<add position="before"><![CDATA[
+			<div class="product-options">
+			{% if link_status and tmddel_status %}
+	           {{ arivaldatetime }}
+	        {% endif %}
+	        </div>
+			]]></add>
+		</operation>
+		<operation error="skip">
+		<search><![CDATA[if (json['error']['recurring']) {]]></search>
+		<add position="before"><![CDATA[
+		/* Delivery Date Error*/
+        if(json['error']['option']['deliverydate']) {
+         $('.errormsgdate').after('<div class="text-danger">' +  json['error']['option']['deliverydate'] + '</div>');
+        }
+
+        if(json['error']['option']['deliverytime']) {
+          $('.errormsgtime').after('<div class="text-danger">' +  json['error']['option']['deliverytime'] + '</div>');
+        }
+        /* Delivery Date Error*/
+		]]></add>
+	    </operation>
+	    <operation error="skip">
+			<search ><![CDATA[#product select, #product textarea']]></search>
+			<add position="replace"><![CDATA[#product select, #product textarea, input[name=\'option[express_delivery]\']:checked, input[name=\'option[express_charges]\']'
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/view/theme/*/template/product/product.twig">
+		<operation error="skip">
+			<search ><![CDATA[<div id="product">]]></search>
+			<add position="replace"><![CDATA[
+			<div id="product">
+			{% if link_status and tmddel_status %}
+	           {{ arivaldatetime }}
+	        {% endif %}
+			]]></add>
+		</operation>
+		<operation error="skip">
+		<search><![CDATA[if (json['error']['recurring']) {]]></search>
+		<add position="before"><![CDATA[
+		/* Delivery Date Error*/
+        if(json['error']['option']['deliverydate']) {
+         $('.errormsgdate').after('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error']['option']['deliverydate'] + '</div>');
+        }
+
+        if(json['error']['option']['deliverytime']) {
+          $('.errormsgtime').after('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error']['option']['deliverytime'] + '</div>');
+        }
+        /* Delivery Date Error*/
+		]]></add>
+	    </operation>
+	    <operation error="skip">
+			<search ><![CDATA[#product select, #product textarea']]></search>
+			<add position="replace"><![CDATA[#product select, #product textarea, input[name=\'option[express_delivery]\']:checked, input[name=\'option[express_charges]\']'
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="system/library/cart/cart.php">
+	<operation error="skip">
+			<search ><![CDATA[$this->weight = $registry->get('weight');]]></search>
+			<add position="after"><![CDATA[$this->currency = $registry->get('currency');]]></add>
+		</operation>
+		
+	<operation error="skip">
+		<search><![CDATA[foreach (json_decode($cart['option']) as $product_option_id => $value) {]]></search>
+		<add position="after"><![CDATA[
+		/*Delivery Date*/
+			if(!empty($product_option_id=='deliverydate')) {
+				$option_data[] = array(
+					'product_option_id'       => $product_option_id,
+					'product_option_value_id' => $value,
+					'option_id'               => '',
+					'option_value_id'         => '',
+					'name'                    => 'Delivery Date',
+					'value'                   => $value,
+					'type'                    => 'Deliverydate',
+					'quantity'                => '',
+					'subtract'                => '',
+					'price'                   => '',
+					'price_prefix'            => '',
+					'points'                  => '',
+					'points_prefix'           => '',
+					'weight'                  => '',
+					'weight_prefix'           => ''
+				);
+			}
+
+			if(!empty($product_option_id=='deliverytime')) {
+				$resultdata = explode('-', $value);
+				if(!empty($resultdata[0])) {
+		          $open_time = str_replace(' ', '', $resultdata[0]);
+		        } else {
+		          $open_time = '';
+		        }
+
+		        if(!empty($resultdata[1])) {
+		          $close_time = str_replace(' ', '', $resultdata[1]);
+		        } else {
+		          $close_time = '';
+		        }
+
+		        $extracharges=array();
+				$deliverytimes = $this->config->get('module_tmdarivaldatetime_delivery_time');
+				if(!empty($deliverytimes)){
+				foreach ($deliverytimes as $result) {
+					if(!empty($result['ex_charges'])) {
+						$extracharges[$result['open_time'].'-'.$result['close_time']]=$result['ex_charges'];
+					}
+				}
+				}
+				$ex_charges='';
+				if(!empty($extracharges[$open_time.'-'.$close_time])) {
+					$option_price += $extracharges[$open_time.'-'.$close_time];
+				}
+				$option_data[] = array(
+					'product_option_id'       => $product_option_id,
+					'product_option_value_id' => $value,
+					'option_id'               => '',
+					'option_value_id'         => '',
+					'name'                    => 'Delivery Time',
+					'value'                   => $value,
+					'type'                    => 'Deliverytime',
+					'quantity'                => '',
+					'subtract'                => '',
+					'price'                   => '',
+					'price_prefix'            => '',
+					'points'                  => '',
+					'points_prefix'           => '',
+					'weight'                  => '',
+					'weight_prefix'           => ''
+				);
+			}
+
+			/* if(!empty($product_option_id=='express_delivery')) {
+				$option_data[] = array(
+					'product_option_id'       => $product_option_id,
+					'product_option_value_id' => $value,
+					'option_id'               => '',
+					'option_value_id'         => '',
+					'name'                    => 'Express Delivery Charges',
+					'value'                   => $this->currency->format($value, $this->session->data['currency']),
+					'type'                    => 'Express Delivery Charges',
+					'quantity'                => '',
+					'subtract'                => '',
+					'price'                   => '',
+					'price_prefix'            => '',
+					'points'                  => '',
+					'points_prefix'           => '',
+					'weight'                  => '',
+					'weight_prefix'           => ''
+				);
+				$option_price +=$value;
+			} */
+		/*Delivery Date*/
+		]]></add>
+	</operation>
+	<operation error="skip">
+		<search><![CDATA[foreach (json_decode($cart['option']) as $product_option_id => $value) {]]></search>
+		<add position="before"><![CDATA[
+		 /*Delivery Date*/
+		 $delivery_option = array();
+		 $delivery_option['deliverydate']	     = 'Delivery Date';
+		 $delivery_option['deliverytime']	     = 'Delivery Time';
+		 $delivery_option['express_delivery']  = 'Express Delivery Charges';
+		 /*Delivery Date*/
+		]]></add>
+	</operation>				
+</file>
+</modification>
