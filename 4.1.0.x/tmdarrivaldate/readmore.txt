@@ -1,0 +1,98 @@
+Apply this code directly to file then working arrival options price will show in shopping cart page 
+
+Go to file location
+
+system/library/cart/cart.php
+
+ 
+1. find here
+foreach ($product_options as $product_option_id => $value) {
+==============================
+before this apply below code.
+==========================================
+/* TMD Arrival Date & Time*/
+		$delivery_option = array();
+		$delivery_option['deliverydate']	     = 'Delivery Date';
+		$delivery_option['deliverytime']	     = 'Delivery Time';
+		$delivery_option['express_delivery']     = 'Express Delivery Charges';
+	  /*TMD Arrival Date & Time*/
+==================================================
+	
+2. find this		
+foreach ($product_options as $product_option_id => $value) {
+============================
+after this apply below code
+========================================
+	/*TMD Arrival Date & Time */
+			if(!empty($product_option_id=='deliverydate')) {
+				$option_data[] = array(
+					'product_option_id'       => $product_option_id,
+					'product_option_value_id' => $value,
+					'option_id'               => '',
+					'option_value_id'         => '',
+					'name'                    => 'Delivery Date',
+					'value'                   => $value,
+					'type'                    => 'Deliverydate',
+					'quantity'                => '',
+					'subtract'                => '',
+					'price'                   => '',
+					'price_prefix'            => '',
+					'points'                  => '',
+					'points_prefix'           => '',
+					'weight'                  => '',
+					'weight_prefix'           => ''
+				);
+			}
+
+			if(!empty($product_option_id=='deliverytime')) {
+				$resultdata = explode('-', $value);
+				if(!empty($resultdata[0])) {
+		          $open_time = str_replace(' ', '', $resultdata[0]);
+		        } else {
+		          $open_time = '';
+		        }
+
+		        if(!empty($resultdata[1])) {
+		          $close_time = str_replace(' ', '', $resultdata[1]);
+		        } else {
+		          $close_time = '';
+		        }
+
+		        $extracharges  = [];
+				$deliverytimes = $this->config->get('arivaldatetime_delivery_time');
+				if(!empty($deliverytimes)){
+				foreach ($deliverytimes as $result) {
+					if(!empty($result['ex_charges'])) {
+						$extracharges[$result['open_time'].'-'.$result['close_time']]=$result['ex_charges'];
+					}
+				  }
+				}
+
+				$ex_charges = '';
+				if(!empty($extracharges[$open_time.'-'.$close_time])) {
+					$option_price += $extracharges[$open_time.'-'.$close_time];
+				}
+
+
+				$option_data[] = array(
+					'product_option_id'       => $product_option_id,
+					'product_option_value_id' => $value,
+					'option_id'               => '',
+					'option_value_id'         => '',
+					'name'                    => 'Delivery Time',
+					'value'                   => $value,
+					'type'                    => 'Deliverytime',
+					'quantity'                => '',
+					'subtract'                => '',
+					'price'                   => '',
+					'price_prefix'            => '',
+					'points'                  => '',
+					'points_prefix'           => '',
+					'weight'                  => '',
+					'weight_prefix'           => ''
+				);
+			}
+
+
+			/*TMD Arrival Date & Time */
+=========================================

@@ -1,0 +1,211 @@
+<h4>{{ heading_title }}</h4>
+{% if not datestatus== '0' or not timereq== '0' %}
+{% if tmddeldatetime_status =='1' %}
+{% if configstore in tmddeldatetime_store %}
+<div class="form-control bg-body-secondary">
+
+	{% if not datestatus== '0' %}
+  <div class="mb-2{% if datestatus == '2' %} required {% endif %}">
+	 <label class="col-form-label" for="datepicker">{{ entry_deliverydate }}</label>
+	  <div class="input-group tmddate">
+
+		<input type="text" name="option[deliverydate]" value="" id="datepicker" placeholder="{{ entry_deliverydate }}"  class="form-control" readonly="readonly" />
+		<input type="hidden" name="day" id="test3" value="">
+		<span class="input-group-btn">
+		<button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>
+		</span>
+		 
+	  <div id="error-option-deliverydate" class="invalid-feedback"></div>
+	  </div>
+  </div> 
+  {% endif %}
+
+  {% if typetimes == 'customer' %}
+  {% if not timereq == '0' %}
+  <br>
+  <div class="mb-2 dateclick{% if timereq == '2' %} required {% endif %}" style="display:none;">
+	<label class="col-form-label" for="form-control">{{ entry_deliverytime }}</label>
+	<div class="input-group tmdtime">
+		{% if VERSION>=4.1.0.0 %}
+	   <input type="time" name="option[deliverytime]"  value="" placeholder="{{ entry_deliverytime }}"  id="input-deliverytime" class="form-control" />
+
+		{% else %}
+	  <input type="text" name="option[deliverytime]"  value="" placeholder="{{ entry_deliverytime }}"  id="input-deliverytime" class="form-control time" />
+	  <span class="input-group-btn">
+		<button type="button" class="btn btn-default"><i class="fa fa-clock-o"></i></button>
+	  </span>
+	  {% endif %}
+	   <div id="error-option-deliverytime" class="invalid-feedback"></div>
+	  
+	</div>
+	<div class="errormsgtime"></div>
+  </div>
+  {% endif %}
+  {% else %}
+  {% if not timereq== '0' %}
+  <br>
+  <div class="mb-3 dateclick{% if timereq=='2' %} required {% endif %}" style="display:none;">
+	<label class="col-form-label" for="input-deliverytime">{{ entry_deliverytime }}</label>
+		<select name="option[deliverytime]" disabled="disabled" id="input-deliverytime" class="form-control deliverytime">
+			<option value="*">{{ text_select }}</option>
+		</select>
+		<div id="error-option-deliverytime" class="invalid-feedback"></div>
+	</div>
+  {% endif %}
+  {% endif %}
+
+</div>
+
+{% if tmdsettingsstatus == '1' %}
+<div class="form-group">
+  <label class="control-label" for="input-express_delivery"><b>{{ entry_delexp_heading }}</b></label><br>
+  {% for ecpressvalue in tmddelexpressvalues %}
+  {% if ecpressvalue.express_charges %}
+  <input type="radio" name="option[express_delivery]" value="{{ ecpressvalue.express_charges }}" class="express_delivery" /> 
+  {% endif %}
+  {{ ecpressvalue.express_text }}  &nbsp({{ ecpressvalue.express_price }})<br>
+  {% endfor %}
+  
+  {% for textsetting in tmddeltextsettings %}
+  	{{ textsetting.sort_order }}. {{ textsetting.tc_text }}<br>
+  {% endfor %}
+</div>
+{% endif %}
+<div class="loadprice"></div>
+{% endif %}
+{% endif %}
+{% endif %}<br>
+
+
+<link rel="stylesheet" type="text/css" href="extension/tmdarrivaldate/catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.css"> 
+<script src="extension/tmdarrivaldate/catalog/view/javascript/jquery/datetimepicker/bootstrap-datetimepicker.min.js"></script> 
+
+<script type="text/javascript">
+	var dateToday      = new Date();
+	var enddate        = '{{ enddate }}';
+	var typetimes      = '{{ typetimes }}';
+	var timereq        = '{{ timereq }}';
+	var dayOfWeek      = dateToday.getUTCDay();
+
+	timeslot();
+
+	{% if (newdatecount) %}
+		dateToday.setDate(dateToday.getDate() + {{ newdatecount }});
+	{% endif %}
+	
+	$(document).ready(function() {
+	$('#datepicker').datepicker({
+		startDate:dateToday,	
+    todayHighlight : true,
+		format: 'yyyy/mm/dd',
+		daysOfWeekDisabled: [{{ tmddeldatetime_week }}],
+		datesDisabled: [{{ datedeactive }}],
+		endDate:enddate
+		
+	}).on('change',function(event){
+		$('.dateclick').removeAttr('style', 'display:none');
+		timeslot();
+	});
+	});
+	
+	function timeslot() {
+		var day = $('#datepicker').val();
+		if(typetimes == 'custom'){
+		$(document).ready(function() {
+			$.ajax({
+				url: 'index.php?route=extension/tmdarrivaldate/tmd/arivaldatetime|loadtime&day='+day,
+				dataType: 'json',
+				beforeSend: function() {
+					$('.errormsgdate').after('<i class="fa fa-circle-o-notch fa-spin"></i>');
+				},
+				complete: function() {
+					setTimeout(function(){
+				  $('.fa-spin').remove();
+					}, 1000);
+				},
+				success: function(json) {
+					$('select[name=\'option[deliverytime]\']').attr("disabled",false);
+					messageshow(json);
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+				}
+			});
+			
+		});
+	}
+	}
+	
+	function messageshow(json){
+		html  = '';
+		html += '<option value="">{{ text_none }}</option>';
+		if (json['deliverytimes'] && json['deliverytimes'] != '') {
+			for (i = 0; i < json['deliverytimes'].length; i++) {
+				html += '<option value="' + json['deliverytimes'][i]['open_time'] + ' - ' + json['deliverytimes'][i]['close_time'] + '"';
+				html += '>' + json['deliverytimes'][i]['text'] + json['deliverytimes'][i]['extra_val']+'</option>';
+			}
+		}
+		$('select[name=\'option[deliverytime]\']').html(html);
+
+		if(typetimes == 'custom'){
+			if(timereq != '0'){
+				dateSave();
+			}
+		}
+	}
+	
+
+	$('.tmdtime').daterangepicker({
+	language: '{{ datepicker }}',
+		    singleDatePicker: true,
+        datePicker: false,
+	     	autoApply: true,
+        timePicker: true,
+        timePicker24Hour: true,
+        locale: {
+            format: 'HH:mm'
+        }
+	}).on('show.daterangepicker', function (ev, picker) {
+        picker.container.find('.calendar-table').hide();
+     
+    });
+</script>
+<script type="text/javascript">
+function loadpricedelivery(){
+	$.ajax({
+  url:'index.php?route=extension/tmdarrivaldate/tmd/arivaldatetime|addprice&product_id='+product_id,
+  data: $('select[name=\'option[deliverytime]\'],#product input[type=\'radio\']:checked'),
+  type:'post',
+  dataType:'json',
+
+  success: function(json) {
+  	html   = '';
+		if(json['ex_charges']){
+			html +='<span style="color:#23a1d1"><b>{{ text_timeslot_charge }}</span> : '+json['ex_charges']+'</b></br>';
+			html +='<span style="color:#23a1d1"><b>{{ text_total }}</span> : '+json['ex_price']+'</b></span>';
+		 $(".loadprice").html(html);
+		}else{
+			$(".loadprice").html('');
+		}
+  },
+  });
+}
+
+$(document).on('change', 'select[name=\'option[deliverytime]\']',function(){
+  product_id = '{{ product_id }}';
+  loadpricedelivery();
+});
+
+$(document).on('change', '.express_delivery',function(){
+  product_id = '{{ product_id }}';
+  $('.arival_total').val(this.value);
+  loadpricedelivery();
+});
+
+$('select[name=\'option[deliverytime]\']').trigger('click')
+
+</script>
+		
+	
+		
+		
